@@ -6,11 +6,9 @@ def transform(coh_list, adj_list = {}):
    for elem in coh_list:
       if elem[0] not in adj_list:
          adj_list[elem[0]] = {elem[1]}
-         adj_list[elem[0]] = {elem[1]}
       else:
          adj_list[elem[0]].add(elem[1])
       if elem[1] not in adj_list:
-         adj_list[elem[1]] = {elem[0]}
          adj_list[elem[1]] = {elem[0]}
       else:
          adj_list[elem[1]].add(elem[0])
@@ -18,4 +16,16 @@ def transform(coh_list, adj_list = {}):
    
 
        
-         
+def transform_with_wight(coh_list, adj_list = {}):
+       for elem in coh_list:
+           if elem[0] not in adj_list:
+                adj_list[elem[0]] = {elem[1]:int(elem[2])}
+                
+           else:
+               adj_list[elem[0]][elem[1]] = int(elem[2])
+           if elem[1] not in adj_list:       
+               adj_list[elem[1]] = {elem[0]:int(elem[2])}
+           else:
+               adj_list[elem[1]][elem[0]]  =  int(elem[2])
+       return adj_list
+   

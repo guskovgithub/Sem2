@@ -2,12 +2,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from blank_list import *
 
-G = nx.Graph()
 
 
+
+f = open('conn_coh', 'r')
 '''ввод графа в виде списка ребер'''
-N = int(input()) # number of edges
-coh_list = [ input().split() for i in range(N) ] #takes edge and its  weight
+coh_list = []
+coh_list = [ line.split() for line in f ]
 adj_list = transform(coh_list)
 
 
@@ -18,24 +19,47 @@ for elem in coh_list:
      visited[elem[0]] = False
      visited[elem[1]] = False
      
-'''обход в глубину'''      
+'''обход в глубину
+функция принимает в качестве начальных параметров список смжености и начальную вершину'''      
 def dfs(vertex):
     visited[vertex] = True
     tree.append(vertex)
-    print(visited)
+    
     for w_vertex in adj_list[vertex]:
+       
         if not visited[w_vertex]:
+            
+           listik.append((vertex, w_vertex))
            dfs(w_vertex) 
 
+listik =[]
+start_vertex = input('введите начальную вершину ')
+dfs(start_vertex)
 
-
-dfs(coh_list[0][0])
 print('Дерево в глубину:', tree)
 
 '''создаем граф  через networkx'''
+G = nx.Graph()
 G.add_nodes_from(tree)
 G.add_edges_from(coh_list)
-nx.draw_circular(G)
-plt.savefig('circular_tree.png')
+
+pos=nx.spring_layout(G,iterations=10)
+nx.draw_networkx_edges(G, pos, width=1,alpha=1,edge_color='black')
+
+nx.draw_networkx_edges(G,pos,
+                       edgelist=listik,
+                       width=10,alpha=0.5,edge_color='r')
+
+nx.draw_networkx_nodes(G, pos)
+nx.draw_networkx_nodes(G,pos,
+                       nodelist=[start_vertex],
+                       node_color='green',
+                       node_size=500,
+                   alpha=0.8, label = 'start')
+labels = {}
+for elem in adj_list:
+    labels[elem] = elem
+nx.draw_networkx_labels(G, pos,labels)
+
 plt.show()
 
