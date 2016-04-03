@@ -8,8 +8,7 @@ import array
 
 import statistics
 
-from matplotlib import rc
-rc('font', family='Droid Sans', weight='normal', size=14)
+
 
 import matplotlib.pyplot as plt
  
@@ -143,7 +142,7 @@ def task_3_from_Hiryanov(self):
       '''путь '''
       way = bfs(G, 'Python','Список_файловых_систем')
       way = [G.get_title(way[i]) for i in range(len(way)) ]
-    
+      
       
               
                  
@@ -164,33 +163,45 @@ def task_3_from_Hiryanov(self):
               'Количество статей с минимальным количеством внешних перенаправлений: ' + str(sum(elem == min(redirects_to_page) for elem in redirects_to_page)) + '\n' + 
               'Максимальное количество перенаправлений на статью: ' + str(max(redirects_to_page)) + '\n'  +
               'Количество статей с максимальным количеством внешних перенаправлений: ' + str(sum(elem == max(redirects_to_page) for elem in redirects_to_page)) + '\n' +        'Статья с наибольшим количеством внешних перенаправлений:' + str(pages_with_max_num_of_redirects)  + '\n' + 
-              "Среднее количество внешних перенаправлений на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(redirects_to_page), statistics.stdev(redirects_to_page)) + '\n')
-              
-              #FIXME 'путь, по которому можно добраться от статьи Python до статьи Список_файловых_систем: ' + str(way) )
+              "Среднее количество внешних перенаправлений на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(redirects_to_page), statistics.stdev(redirects_to_page)) + '\n' + 'путь, по которому можно добраться от статьи Python до статьи Список_файловых_систем: ' + str(way) )
 
 
 # отдельно оформим функицию обхода в ширину
 def bfs(G, start, finish):  
-    start, finish = G.get_id(start), G.get_id(finish)          
-    path = []
+    start, finish = G.get_id(start), G.get_id(finish)  
+    parent = {start: None}
+    i = 1
     queue = [start]
     while queue:
-          current = queue.pop(0)
-          
-          if current not in path:
-               path.append(current)
-               queue = queue + list(G.get_links_from(current))
-          if current == finish:
-                   break    
-    return path       
+          new_queue = []
+          for current in queue:
+               for v in G.get_links_from(current):
+                    if v not in parent:
+                       parent[v] = current
+                       new_queue.append(v)
+                    if v == finish:
+                       break                   
+          queue = new_queue 
+              
+    _way = [finish]
+    current = parent[finish]
+    while  current:
+       _way.append(current) 
+        current = parent[current]
+    _way = _way[::-1]   
+    
+    return _way                
+           
     
 
                    
 def hist(objects, data, liamda, xlabel, ylabel, title, facecolor='green', alpha=0.5, transparent=True):
     
     x_pos = np.arange(len(objects))
+    
  
     x_pos_im = np.arange( 0, max(objects), liamda)
+    
     plt.bar(x_pos, data, align='center', alpha=0.5)
     plt.xticks(x_pos_im)
     plt.ylabel(ylabel)
@@ -226,7 +237,7 @@ def task_4_hists(self):
 
 
      ''' 3  --- распределение размеров статей'''
-     liamda = 2500 
+     liamda = 8000 
      interval = [[(i*liamda),((i+1)*liamda)] for i in range(max(self._sizes)//liamda)]
      size_hist = {}
      for i in range(self.get_number_of_pages()):
@@ -261,12 +272,12 @@ def task_4_hists(self):
          else:
              hist_redirects_to_page[elem] += 1
      x,y = []*len(hist_redirects_to_page),[]*len(hist_redirects_to_page) 
-     print(hist_redirects_to_page)
+     
      for j in hist_redirects_to_page:
          x.append(j)
          y.append(hist_redirects_to_page[j])
-     print(x)     
-     hist(x, y, liamda, 'кол-во перенаправлений', 'кол-во статей ','распределение количества перенаправлений на статью')       
+         
+     hist(x, y, liamda, 'кол-во перенаправлений', 'кол-во статей ','распределение количества перенаправлений на статью')      
              
      plt.show()
    
