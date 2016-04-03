@@ -81,8 +81,7 @@ def task_3_from_Hiryanov(self):
       '''внутренний анализ статей'''
       '''зададим необходимые переменные'''
       redirected_titels = 0
-      min_number_of_links = self.get_number_of_links_from(1)
-      max_number_of_links = 0
+      number_of_links = []
       amount_of_pages_with_min_number_of_links = 0   
       amount_of_pages_with_max_number_of_links = 0 
       list_of_articels_with_max_links = ''
@@ -91,18 +90,25 @@ def task_3_from_Hiryanov(self):
       for i in range(self.get_number_of_pages()):
            if self.is_redirect(i):
                redirected_titels += 1
-           if  self.get_number_of_links_from(i) < min_number_of_links:
-               min_number_of_links =  self.get_number_of_links_from(i)
-           if  self.get_number_of_links_from(i) > max_number_of_links:
-               max_number_of_links = self.get_number_of_links_from(i)
-               
-               
+           number_of_links.append(self.get_number_of_links_from(i))
+      max_number_of_links = max(number_of_links)                    
+      min_number_of_links = min(number_of_links) 
+      
+                         
       for i in  range(self.get_number_of_pages()):
            if self.get_number_of_links_from(i) == min_number_of_links:
                 amount_of_pages_with_min_number_of_links  += 1
            if self.get_number_of_links_from(i) == max_number_of_links:
                 amount_of_pages_with_max_number_of_links +=1
-                list_of_articels_with_max_links += str(self._titles[i])     
+                list_of_articels_with_max_links += str(self._titles[i]) 
+             
+      global   dict_amount_of_links_from_page       
+      dict_amount_of_links_from_page = {}
+      for i in range (self.get_number_of_pages()):
+           if not G.get_number_of_links_from(i) in dict_amount_of_links_from_page:
+               dict_amount_of_links_from_page[G.get_number_of_links_from(i)] = 1
+           else:
+               dict_amount_of_links_from_page[G.get_number_of_links_from(i)] += 1            
       
       '''внешний анализ статей'''
       num_of_links_to_page = [0 for i in range(G.get_number_of_pages())]
@@ -114,14 +120,25 @@ def task_3_from_Hiryanov(self):
                   num_of_links_to_page[int(elem)] -= 1
                   
       pages_with_max_num_of_to_links = [G.get_title(i) for i in range(G.get_number_of_pages()) if num_of_links_to_page[i] == max(num_of_links_to_page)]  
+
+      global dict_num_of_links_to_page 
+      dict_num_of_links_to_page = {}
+      for i in range(len(num_of_links_to_page)):
+         if  num_of_links_to_page[i] not in  dict_num_of_links_to_page:
+            dict_num_of_links_to_page[num_of_links_to_page[i]] = 1
+         else:
+            dict_num_of_links_to_page[num_of_links_to_page[i]] += 1
       
       ''' анализ перенаправлений'''
+      global redirects_to_page
       redirects_to_page = [0 for i in range(G.get_number_of_pages())]
       for i in range(G.get_number_of_pages()):
           for elem in G.get_links_from(i):
                if G.is_redirect(i) == 1:
                    redirects_to_page[elem] += 1
       pages_with_max_num_of_redirects  = [G.get_title(i) for i in range(G.get_number_of_pages()) if redirects_to_page[i] == max(redirects_to_page) ]
+      global max_amount_of_redirected_pages 
+      max_amount_of_redirected_pages = max(redirects_to_page)
       
       '''путь '''
       way = bfs(G, 'Python','Список_файловых_систем')
@@ -134,74 +151,135 @@ def task_3_from_Hiryanov(self):
               'минимальное количество ссылок из статьи: ' + str(min_number_of_links) + '\n' +
               'количество статей с минимальным количеством ссылок: ' + str(amount_of_pages_with_min_number_of_links) + '\n' + 
               'максимальное количество ссылок из статьи: ' + str(max_number_of_links) + '\n' +
-               'количество статей с максимальным количеством ссылок: ' + str(amount_of_pages_with_max_number_of_links) + '\n' +
-               'cтатьи с наибольшим количеством ссылок: '+ list_of_articels_with_max_links + '\n' + 
-               'среднее количество ссылок в статье: ' + str(round(self._nlinks / self.n)) + '\n'  +
-               'Минимальное количество ссылок на статью: ' + str(min(num_of_links_to_page)) + '\n'  +
-                'Количество статей с минимальным количеством внешних ссылок: ' + str(sum(elem == min(num_of_links_to_page) for elem in num_of_links_to_page )) + '\n' + 
-                'Максимальное количество ссылок на статью: ' + str(max(num_of_links_to_page)) + '\n'  +
-                'Количество статей с максимальным количеством внешних ссылок: ' + str(sum(elem == max(num_of_links_to_page) for elem in num_of_links_to_page )) + '\n' +
-                'Статья с наибольшим количеством внешних ссылок' + str(pages_with_max_num_of_to_links) + '\n' + 
-                "Среднее количество внешних ссылок на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(num_of_links_to_page), statistics.stdev(num_of_links_to_page)) + '\n' + 
-                'Минимальное количество перенаправлений на статью: ' + str(min(redirects_to_page)) + '\n' +
-                'Количество статей с минимальным количеством внешних перенаправлений: ' + str(sum(elem == min(redirects_to_page) for elem in redirects_to_page)) + '\n' + 
-                'Максимальное количество перенаправлений на статью: ' + str(max(redirects_to_page)) + '\n'  +
-                'Количество статей с максимальным количеством внешних перенаправлений: ' + str(sum(elem == max(redirects_to_page) for elem in redirects_to_page)) + '\n' + 
-                'Статья с наибольшим количеством внешних перенаправлений:' + str(pages_with_max_num_of_redirects)  + '\n' + 
-                "Среднее количество внешних перенаправлений на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(redirects_to_page), statistics.stdev(redirects_to_page)) + '\n' + 
-                'путь, по которому можно добраться от статьи Python до статьи Список_файловых_систем: ' + str(way) )
+              'количество статей с максимальным количеством ссылок: ' + str(amount_of_pages_with_max_number_of_links) + '\n' +
+              'cтатьи с наибольшим количеством ссылок: '+ list_of_articels_with_max_links + '\n' + 
+              'среднее количество ссылок в статье: ' + str(round(self._nlinks / self.n)) + '\n'  +
+              'Минимальное количество ссылок на статью: ' + str(min(num_of_links_to_page)) + '\n'  +
+              'Количество статей с минимальным количеством внешних ссылок: ' + str(sum(elem == min(num_of_links_to_page) for elem in num_of_links_to_page )) + '\n' + 
+              'Максимальное количество ссылок на статью: ' + str(max(num_of_links_to_page)) + '\n'  +
+              'Количество статей с максимальным количеством внешних ссылок: ' + str(sum(elem == max(num_of_links_to_page) for elem in num_of_links_to_page )) + '\n' +
+              'Статья с наибольшим количеством внешних ссылок' + str(pages_with_max_num_of_to_links) + '\n' + 
+              "Среднее количество внешних ссылок на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(num_of_links_to_page), statistics.stdev(num_of_links_to_page)) + '\n' + 
+              'Минимальное количество перенаправлений на статью: ' + str(min(redirects_to_page)) + '\n' +
+              'Количество статей с минимальным количеством внешних перенаправлений: ' + str(sum(elem == min(redirects_to_page) for elem in redirects_to_page)) + '\n' + 
+              'Максимальное количество перенаправлений на статью: ' + str(max(redirects_to_page)) + '\n'  +
+              'Количество статей с максимальным количеством внешних перенаправлений: ' + str(sum(elem == max(redirects_to_page) for elem in redirects_to_page)) + '\n' +        'Статья с наибольшим количеством внешних перенаправлений:' + str(pages_with_max_num_of_redirects)  + '\n' + 
+              "Среднее количество внешних перенаправлений на статью: %0.2f  (ср. откл. : %0.2f)" %(statistics.mean(redirects_to_page), statistics.stdev(redirects_to_page)) + '\n')
+              
+              #FIXME 'путь, по которому можно добраться от статьи Python до статьи Список_файловых_систем: ' + str(way) )
 
 
-#отдельно оформим функицию обхода в ширину
+# отдельно оформим функицию обхода в ширину
 def bfs(G, start, finish):  
     start, finish = G.get_id(start), G.get_id(finish)          
     path = []
     queue = [start]
     while queue:
           current = queue.pop(0)
-          if current == finish:
-                   break
+          
           if current not in path:
                path.append(current)
                queue = queue + list(G.get_links_from(current))
-              
+          if current == finish:
+                   break    
     return path       
     
 
                    
-         
-
-def hist(objects, data,  xlabel, ylabel, title, facecolor='green', alpha=0.5, transparent=True, **kwargs):
+def hist(objects, data, liamda, xlabel, ylabel, title, facecolor='green', alpha=0.5, transparent=True):
     
-    y_pos = np.arange(len(objects))
-    plt.bar(y_pos, data, align='center', alpha=0.5)
-    plt.xticks(y_pos, [i for i in range(G.get_number_of_pages())])
+    x_pos = np.arange(len(objects))
+ 
+    x_pos_im = np.arange( 0, max(objects), liamda)
+    plt.bar(x_pos, data, align='center', alpha=0.5)
+    plt.xticks(x_pos_im)
     plt.ylabel(ylabel)
-    
     plt.xlabel(xlabel)
     plt.title(title)
+    
     plt.plot()
     
 
+
+
+'''задание 4 - гистограммы'''
+def task_4_hists(self):
+     
+     ''' 1 --- распределение количества ссылок из статьи'''
+
+     x, y = [], []      
+     liamda = len(dict_amount_of_links_from_page) / 10   
+     for elem in dict_amount_of_links_from_page:
+          x.append(elem)
+          y.append(dict_amount_of_links_from_page[elem])
+     plt.figure(1)
+     hist(x, y, liamda,'кол-во ссылок', 'кол-во статей ','распределение количества ссылок из статьи')  # распределение количества ссылок из статьи 
+
+     ''' 2 --- распределение количества ссылок на статью'''
+     x, y = [], []
+     liamda = len(dict_num_of_links_to_page)/10
+     for elem in dict_num_of_links_to_page:
+        x.append(elem)
+        y.append(dict_num_of_links_to_page[elem])
+     plt.figure(2)
+     hist(x, y,liamda, 'кол-во внешних ссылок', 'кол-во статей ','распределение количества ссылок на статью')  
+
+
+     ''' 3  --- распределение размеров статей'''
+     liamda = 2500 
+     interval = [[(i*liamda),((i+1)*liamda)] for i in range(max(self._sizes)//liamda)]
+     size_hist = {}
+     for i in range(self.get_number_of_pages()):
+          for j in range(len(interval)):
+              if (self.get_page_size(i) > interval[j][0]) and (self.get_page_size(i) < interval[j][1]):
+                     if j not in  size_hist:
+                         size_hist[j] = 1
+                     else:
+                         size_hist[j] += 1   
+     x,y  = [0 for i in range(len(interval))], [0 for i in range(len(interval))]
+     y_log = [0 for i in range(len(interval))]
+     for j in size_hist:
+          x[j] = interval[j][1]
+          y[j] = size_hist[j]       
+          y_log[j] =  math.log(size_hist[j]) 
+     plt.figure(3)     
+        
+          
+     hist(x, y, liamda, 'размер статей', 'кол-во статей ','распределение размеров статей') 
+     
+     ''' 4  --- распределение размеров статей в логарифмическом масшате'''
+     plt.figure(4)
+     hist(x, y_log, liamda,'размер статей', 'кол-во статей в логарифмическом масштабе ','распределение размеров статей')
+     ''' 5  --- распределение количества перенаправлений на статью''' 
+     plt.figure(5)
+     liamda = 1 
+    
+     hist_redirects_to_page = {}
+     for elem in redirects_to_page:
+         if elem not in hist_redirects_to_page:
+             hist_redirects_to_page[elem] = 1
+         else:
+             hist_redirects_to_page[elem] += 1
+     x,y = []*len(hist_redirects_to_page),[]*len(hist_redirects_to_page) 
+     print(hist_redirects_to_page)
+     for j in hist_redirects_to_page:
+         x.append(j)
+         y.append(hist_redirects_to_page[j])
+     print(x)     
+     hist(x, y, liamda, 'кол-во перенаправлений', 'кол-во статей ','распределение количества перенаправлений на статью')       
+             
+     plt.show()
+   
+        
 '''создадим граф под названием G '''         
-G=WikiGraph()    
+G = WikiGraph()    
 G.load_from_file('wiki_small.txt')        
 '''запустим функцию 3-го задания'''
-task_3_from_Hiryanov(G)
-'''задание 4 - гистограммы'''
-dict_amount_of_links_from_page = {}
-for i in range (G.get_number_of_pages()):
-   if not G.get_number_of_links_from(i) in dict_amount_of_links_from_page:
-         dict_amount_of_links_from_page[G.get_number_of_links_from(i)] = 1
-   else:
-         dict_amount_of_links_from_page[G.get_number_of_links_from(i)] += 1
-plt.figure(1)
-plt.subplot(211)
-#hist(dict_amount_of_links_from_page,[i for i in dict_amount_of_links_from_page ], 'кол-во ссылок', 'кол-во статей ','распределение количества ссылок из статьи')  # распределение количества ссылок из статьи
-plt.subplot(212)
-#hist(G._titles, [G.get_page_size(i) for  i in range(G.get_number_of_pages()) ], 'статьи', 'размер  ','распределение размеров статей')  # распределение размеров статей
-#hist(G._titles, [math.log(G.get_page_size(i)) for  i in range(G.get_number_of_pages()) ], 'статьи', 'ln(размер)  ','распределение размеров статей в логарифмческом масштабе')  # распределение размеров статей в логарифмческом масштабе
-plt.show()
+task_3_from_Hiryanov(G) 
+'''запустим функцию 4-го задания'''   
+task_4_hists(G)      
+
+
 if __name__ == '__main__':
 
     if len(sys.argv) != 2:
@@ -214,7 +292,7 @@ if __name__ == '__main__':
     else:
         print('Файл с графом не найден')
         sys.exit(-1)
-    hist(G._titles, [get_numer_of_links_from(i) for  i in range(self.get_number_of_pages()) ], 'статьи', 'кол-во ссылок ','распределение количества ссылок из статьи')     
-        
+    
+      
 
-    # TODO: статистика и гистограммы
+   
