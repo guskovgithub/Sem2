@@ -186,7 +186,7 @@ def bfs(G, start, finish):
     _way = [finish]
     current = parent[finish]
     while  current:
-       _way.append(current) 
+        _way.append(current) 
         current = parent[current]
     _way = _way[::-1]   
     
