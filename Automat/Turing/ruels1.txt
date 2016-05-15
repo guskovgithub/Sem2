@@ -1,0 +1,4 @@
+first 1 1 first > no
+first 0 0 first > no
+first # 0 second = no
+second 0 0 second = yes

@@ -1,0 +1,7 @@
+first a a second > no
+first b b second > no
+first #  second = no
+second #  second = yes
+second a  second = yes
+second b  second = yes
+

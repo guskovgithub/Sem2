@@ -1,0 +1,31 @@
+first a  second = no
+first b  third = no
+first c  forth = no
+first d  fifth = no
+
+second a a second > no
+second b b second > no
+second c c second > no
+second d d second > no
+second # a super_second = no
+third a a third > no
+third b b third > no
+third c c third > no
+third d d third > no
+third # b super_third = no
+forth a a forth > no
+forth b b forth > no
+forth c c forth > no
+forth d d forth > no
+forth # c super_forth = no
+fifth a a fifth > no
+fifth b b fifth > no
+fifth c c fifth > no
+fifth d d fifth > no
+fifth # c super_fifth = no
+
+
+super_third b b super_third = yes
+super_second a a super_second = yes
+super_forth c c super_forth = yes
+super_fifth d d super_fifth = yes

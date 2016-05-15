@@ -1,0 +1,21 @@
+first a a second > no
+second a a second > no
+second b b second > no
+second #  left_second < no
+left_second b b left_second = yes
+left_second a  del_second < no
+del_second a  del_second < no
+del_second b  del_second < no
+del_second #  del_second = yes
+
+
+first b b third > no
+third a a third > no
+third b b third > no
+third #  left_third < no
+left_third a a left_third = yes
+left_third b  del_third < no
+del_third a  del_third < no
+del_third b  del_third < no
+del_third #  del_third = yes
+
