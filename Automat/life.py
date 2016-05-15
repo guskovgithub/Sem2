@@ -10,8 +10,8 @@ live = [[0 for row in range(61)] for col in range(81)]
 new_generation = [[0 for row in range(61)] for col in range(81)]
 
 # загружаем начальные данные
-
-
+'''
+вариант загрузки НЕ из файла
 
 def load():
     for y in range(-1,61):
@@ -33,7 +33,20 @@ def load():
     live[30][32] = 1
     live[31][32] = 1
     live[32][32] = 1
-
+'''
+def load_from_file():
+   
+    f = open('map.txt', 'r')
+    for y in range(60):
+        line = f.readline()
+        line =line.strip()
+        for x in range(80):
+              live[x][y] = int(line[x])
+              new_generation[x][y] = 0
+              cell[x][y] = canvas.create_oval((x*10, y*10, x*10+10, y*10+10), outline="gray", fill="black")  
+    f.close()
+   
+   
             
           
 def statystic():
@@ -91,6 +104,6 @@ root.title("Conway's Game of Life")
 canvas = Canvas(root, width=800, height=600, highlightthickness=0, bd=10, bg='black') # создаем холст
 canvas.pack() # отображаем его на экране
 #load() # загружаем начальные данные 
-load()
+load_from_file()
 step()  # вызываем step, вызывающий сам себя ;) 
 root.mainloop()
