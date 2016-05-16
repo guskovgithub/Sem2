@@ -1,39 +1,19 @@
 from tkinter import *
-
 import random
-import time
+from pygame import mixer
+
+def play(sound_file):
+    mysound = tkSnack.Sound()
+    mysound.read(sound_file)
+    mysound.play()
 
 # матрицы для отрисовки клеток (cell); живые и мертвых клетках (live) - живая клетка 1, мертвая 0; 
 cell = [[0 for row in range(61)] for col in range(81)]
-
 live = [[0 for row in range(61)] for col in range(81)]
 new_generation = [[0 for row in range(61)] for col in range(81)]
 
+
 # загружаем начальные данные
-'''
-вариант загрузки НЕ из файла
-
-def load():
-    for y in range(-1,61):
-        for x in range(-1,81):
-            live[x][y] = 0
-            new_generation[x][y] = 0
-            cell[x][y] = canvas.create_oval((x*10, y*10, x*10+10, y*10+10), outline="gray", fill="black")
-
-    # карабль
-    live[11][10] = 1
-    live[12][11] = 1
-    live[10][12] = 1
-    live[11][12] = 1
-    live[12][12] = 1
-
-    # осциллятор 
-    live[31][30] = 1
-    live[32][31] = 0
-    live[30][32] = 1
-    live[31][32] = 1
-    live[32][32] = 1
-'''
 def load_from_file():
    
     f = open('map.txt', 'r')
@@ -42,7 +22,6 @@ def load_from_file():
         line =line.strip()
         for x in range(80):
               live[x][y] = int(line[x])
-              new_generation[x][y] = 0
               cell[x][y] = canvas.create_oval((x*10, y*10, x*10+10, y*10+10), outline="gray", fill="black")  
     f.close()
    
@@ -52,7 +31,7 @@ def load_from_file():
 def statystic():
     return live == new_generation
 
-# Правила жизни
+''' функция создает новое поколение клеток исходя из расположения старых в live. После чего проверяет на статичность (произошли какие либо изменения или нет - если нет, то выходит из программы). После live превращается в новое поколение '''
 def process():
     for y in range(0,60):
         for x in range(0,80):
@@ -69,12 +48,12 @@ def process():
         for x in range(80):
             live[x][y] = new_generation[x][y]
 
-# Посчитаем кол-во живых соседей :)
+''' функция считает кол-во живых соседей :) '''
 def live_neighbors(a,b):
     lives = 0
     for i in range(-1,2):
         for j in range(-1,2):
-           if a+i > -1 and a+i < 80 and b+i > -1 and b+i < 60:
+           if a+i > -1 and a+i < 80 and b+j > -1 and b+j < 60:
             
              if  i==0 and j==0:
                  pass
@@ -82,7 +61,7 @@ def live_neighbors(a,b):
              elif live[a+i][b+j] == 1: lives += 1
     return lives         
 
-# Рисуем живые и мертвые клатки. Живые - зеленые; мертвые - черным. 
+'''функция рисует живые и мертвые клатки. Живые - зеленые; мертвые - черным. ''' 
 def draw():
     for y in range(60):
         for x in range(80):
@@ -92,18 +71,22 @@ def draw():
                 canvas.itemconfig(cell[x][y], fill="green")
 
 
-# process and draw the next frame
+
 def step():
     process()
     draw()
     root.after(10, step)
 
-
+def music():
+     mixer.init(10000)
+     m = mixer.Sound('sound.wav')
+     m.play()
+     
 root = Tk()
 root.title("Conway's Game of Life")
+music()
 canvas = Canvas(root, width=800, height=600, highlightthickness=0, bd=10, bg='black') # создаем холст
 canvas.pack() # отображаем его на экране
-#load() # загружаем начальные данные 
-load_from_file()
+load_from_file() # загружаем начальные данные 
 step()  # вызываем step, вызывающий сам себя ;) 
 root.mainloop()
